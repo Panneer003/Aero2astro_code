@@ -1,19 +1,16 @@
 import json
 import os
 import cv2
-from test import name 
+ 
 
 
-
-
-
-indexes = name()
+super_categories = {'aeroplane':'vehicle','bird':'animal','boat':'vehicle','motorcycle':'vehicle','umbrella':'accessory','cow':'animal'}
  # ------------ Use os to extract the image name in the images folder, and read the BBox into it ------------
  #root path, which contains images (picture folder), annos.txt (bbox annotation), classes.txt (category label),
  # and annotations folder (created automatically if not, used to save the last json)
-root_path = 'Dataset2'
+root_path = '/home/nps/Nps/Intern/Aero2astro/Project/Yolo_to_coco_2'
  # Used to create a training set or validation set
-phase = 'train' # need to be corrected
+phase = 'train_2' # need to be corrected
  
  # dataset is used to save image information and annotation information of all data
 dataset = {'categories': [], 'annotations': [], 'images': []}
@@ -24,10 +21,10 @@ with open(os.path.join(root_path, 'classes.txt')) as f:
  
  # Establish the correspondence between category labels and numeric ids
 for i, cls in enumerate(classes, 1):
-    dataset['categories'].append({'id': i, 'name': cls, 'supercategory': 'mark'})
+    dataset['categories'].append({'id': i, 'name': cls, 'supercategory': super_categories[cls]})
  
  # Read the image name of the images folder
-
+indexes = os.listdir(os.path.join(root_path, 'images'))
  
  # Statistics Processing the number of pictures
 global count
@@ -41,7 +38,7 @@ with open(os.path.join(root_path, 'annos.txt')) as tr:
     for k, index in enumerate(indexes):
         count += 1
                  # Read images with opencv to get the width and height of the image
-        im = cv2.imread(index)
+        im = cv2.imread(os.path.join(root_path, 'images/') + index)
         height, width, _ = im.shape
  
                  # Add image information to the dataset
@@ -84,6 +81,6 @@ with open(os.path.join(root_path, 'annos.txt')) as tr:
 folder = os.path.join(root_path, 'annotations')
 if not os.path.exists(folder):
   os.makedirs(folder)
-json_name = os.path.join(root_path, '{}.json'.format(phase))
+json_name = os.path.join(root_path, 'annotations/{}.json'.format(phase))
 with open(json_name, 'w') as f:
   json.dump(dataset, f)

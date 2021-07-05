@@ -1,20 +1,16 @@
 import os
 import cv2
-from test import name
-import glob
-
-#txtFileList = glob.glob('Dataset/*.txt')
+ 
 # 
-#originLabelsDir = 'Dataset'
+originLabelsDir = 'annotations'
  # Converted file save path
-saveDir = 'Dataset2/train.txt'                                                                           
+saveDir = 'first_out.txt'                                                                       
  # Picture path corresponding to the original label
-#originImagesDir = 'Dataset'
-txtFileList = name()
-#txtFileList = os.listdir(originLabelsDir)
+originImagesDir = 'images'
+txtFileList = os.listdir(originLabelsDir)
 with open(saveDir, 'w') as fw:
     for txtFile in txtFileList:
-        with open(txtFile, 'r') as fr:
+        with open(os.path.join(originLabelsDir, txtFile), 'r') as fr:
             labelList = fr.readlines()
             for label in labelList:
                 label = label.strip().split()
@@ -24,8 +20,8 @@ with open(saveDir, 'w') as fw:
                 h = float(label[4])
  
                 # convert x,y,w,h to x1,y1,x2,y2
-                imagePath = txtFile.replace('txt', 'jpg')
-                                         
+                imagePath = os.path.join(originImagesDir,
+                                         txtFile.replace('txt', 'jpg'))
                 image = cv2.imread(imagePath)
                 H, W, _ = image.shape
                 x1 = (x - w / 2) * W
