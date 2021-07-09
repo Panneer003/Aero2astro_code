@@ -2,16 +2,16 @@ import tensorflow as tf
 from tensorflow.keras.layers import Conv2D , BatchNormalization , MaxPool2D
 
 
-def convblock(input_tensors, bn=True , coorconv = True):
+def convblock(input_tensors, bn=True , coorconv = True ):
     
     conv = Conv2D(filters= input_tensors.shape[-1]*2, kernel_size=(3,3),padding='same')(input_tensors)
 
-    if bn: conv = BatchNormalization()(conv)
+    #if bn: conv = BatchNormalization()(conv)
 
     conv = tf.nn.relu(conv)
     if coordconv: conv = coordconv(conv)
-    conv = Conv2D(filters=input_tensors.shape[-1], kernel_size =(1,1),padding='same')(conv)
-    if bn: conv = BatchNormalization()(conv)
+    conv = Conv2D(filters=input_tensors.shape[-1], kernel_size =(1,1))(conv)
+    #if bn: conv = BatchNormalization()(conv)
     conv = tf.nn.relu(conv)
 
     return conv
@@ -58,7 +58,7 @@ def upsampling(features):
 
 def sppblock(input_tensors):
 
-    pooling_1 =  MaxPool2D(pool_size=(1,1),padding ='same',strides=(1,1))(input_tensors)
+    pooling_1 =  MaxPool2D(pool_size=(1,1),strides=(1,1))(input_tensors)
     pooling_2 = MaxPool2D(pool_size=(5,5),padding='same',strides=(1,1))(input_tensors)
     pooling_3 = MaxPool2D(pool_size=(9,9),padding='same',strides=(1,1))(input_tensors)
     #pooling_4 = MaxPool2D(pool_size=(13,13),padding='same',strides=(1,1))(input_tensors)
@@ -67,5 +67,13 @@ def sppblock(input_tensors):
 
     return output
 
-    
+def conv_head(features):
+    channel = features.shape[-1]
+
+    conv = coordconv(features)
+    conv = Conv2D(filters=channel*2,kernel_size=(3,3),padding='same')(conv)
+    conv = tf.nn.relu(conv)
+    conv = Conv2D(filters=33,kernel_size=(1,1))(conv)
+
+    return conv 
 
